@@ -36,6 +36,10 @@ The system processes spoken questions about health topics and provides relevant 
    ```bash
    python main.py
    ```
+2. open url address
+   ```bash
+   http://localhost:8000
+   ```
 
 ## Voice Agent Workflow Explanation
 

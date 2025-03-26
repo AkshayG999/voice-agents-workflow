@@ -200,7 +200,7 @@ if __name__ == "__main__":
     is_https = os.environ.get("HTTPS", "").lower() == "true"
     
     print(f"\n{'='*50}")
-    print(f"Starting server on http{'s' if is_https else ''}://{host}:{port}")
+    print(f"Starting server on http{'s' if is_https else ''}://{'localhost'}:{port}")
     if not is_https:
         print("\nWARNING: Running in non-HTTPS mode.")
         print("Browser microphone access may be restricted.")

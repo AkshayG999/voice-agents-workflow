@@ -1,12 +1,13 @@
-# Voice Assistant
+# OpenAI Voice Agent for Healthcare
 
-The system processes spoken questions about health topics and provides relevant information through both text and synthesized speech responses.
+The system processes spoken questions about health topics and provides relevant information through both text and synthesized speech responses using advanced OpenAI voice agent technology.
 
 ## Features
 
-- Real-time voice input processing
-- Automatic routing to specialized healthcare agents (cardiology, neurology, nutrition, etc.)
-- Text and voice responses
+- Real-time voice input processing with OpenAI SDK integration
+- Automatic routing to specialized healthcare voice agents (cardiology, neurology, nutrition, etc.)
+- Text and voice responses powered by OpenAI's advanced language models
+- Intelligent medical agent workflow for healthcare inquiries
 
 ## Screenshots
 
@@ -41,54 +42,55 @@ The system processes spoken questions about health topics and provides relevant 
    http://localhost:8000
    ```
 
-## Voice Agent Workflow Explanation
+## OpenAI Voice Agent Workflow Explanation
 
-The following explains how the voice agent system processes speech-to-text (STT), language model (LLM) answering, and text-to-speech (TTS).
+The following explains how our advanced healthcare voice agent system processes speech-to-text (STT), OpenAI language model (LLM) answering, and text-to-speech (TTS) in a seamless medical assistant workflow.
 
-### Complete Voice Agent Workflow
+### Complete OpenAI Voice Agent Workflow for Healthcare
 
-#### Audio Capture (Browser)
-- User starts recording by clicking the button
-- Browser captures microphone audio via Web Audio API
-- Real-time silence detection monitors when the user stops talking
-- Audio is converted from Float32 to Int16 format and sent to server via WebSockets
+#### Audio Capture (Browser-based Voice Agent Interface)
+- User starts recording by clicking the button to activate the medical voice agent
+- Browser captures microphone audio via Web Audio API for the healthcare voice assistant
+- Real-time silence detection monitors when the user stops talking to the medical agent
+- Audio is converted from Float32 to Int16 format and sent to server via WebSockets for OpenAI processing
 
-#### Speech-to-Text Processing (Server)
-- Server receives audio chunks via /ws WebSocket endpoint
-- Audio is fed into StreamedAudioInputWithEndDetection buffer
-- When silence is detected, client signals "end_of_speech"
-- The VoicePipeline processes the audio stream for transcription
-- OpenAI's Whisper model (likely used behind the scenes) converts speech to text
+#### Speech-to-Text Processing (OpenAI SDK Server)
+- Server receives audio chunks via /ws WebSocket endpoint for the healthcare voice workflow
+- Audio is fed into StreamedAudioInputWithEndDetection buffer using OpenAI agent technology
+- When silence is detected, client signals "end_of_speech" to the medical voice assistant
+- The VoicePipeline processes the audio stream for transcription in the healthcare agent workflow
+- OpenAI's Whisper model converts speech to text for medical inquiry processing
 
-#### Language Understanding & Response (LLM)
-- Transcription is passed to MyWorkflow.run() method
-- Text is added to conversation history in _input_history
-- Runner.run_streamed() processes the query with the appropriate agent:
-  - Main agent classifies the query using classify_medical_intent
-  - Query is routed to specialized agents (cardiology, nutrition, etc.)
-  - Agent uses OpenAI's GPT models to generate a response
-  - Function tools (get_weather, get_health_info, etc.) provide external data
+#### Language Understanding & Response (OpenAI LLM Healthcare Agents)
+- Transcription is passed to MyWorkflow.run() method in the medical agent system
+- Text is added to conversation history in _input_history for contextual healthcare responses
+- Runner.run_streamed() processes the query with the appropriate medical voice agent:
+  - Main agent classifies the query using classify_medical_intent for healthcare routing
+  - Query is routed to specialized OpenAI healthcare agents (cardiology, nutrition, mental health, etc.)
+  - Agent uses OpenAI's GPT models to generate medically-relevant responses
+  - Function tools (get_weather, get_health_info, etc.) provide external data to enhance the medical voice agent
 
-#### Text-to-Speech Generation (Server)
-- Response text is streamed from the LLM via VoiceWorkflowHelper.stream_text_from()
-- Server converts text to speech (likely using OpenAI's TTS API)
-- Audio is buffered into reasonable chunks (about 200ms each)
-- Audio data is sent back to client as binary WebSocket messages
+#### Text-to-Speech Generation (OpenAI Voice Technology)
+- Response text is streamed from the healthcare LLM via VoiceWorkflowHelper.stream_text_from()
+- Server converts text to speech using OpenAI's advanced TTS API for natural-sounding medical responses
+- Audio is buffered into reasonable chunks (about 200ms each) for smooth healthcare voice playback
+- Audio data is sent back to client as binary WebSocket messages in the medical agent workflow
 
-#### Audio Playback (Browser)
-- Browser receives audio chunks and adds them to audioQueue
-- processAudioQueue handles sequential playback of chunks
+#### Audio Playback (Healthcare Voice Assistant Interface)
+- Browser receives audio chunks from the medical voice agent and adds them to audioQueue
+- processAudioQueue handles sequential playback of chunks for the healthcare assistant
 - Each audio chunk is:
-  - Converted from Int16 to Float32 format
-  - Loaded into an AudioBuffer
-  - Played through Web Audio API
-- System waits for each chunk to finish before playing the next
+  - Converted from Int16 to Float32 format for optimal healthcare voice quality
+  - Loaded into an AudioBuffer for the medical voice agent
+  - Played through Web Audio API for clear medical information delivery
+- System waits for each chunk to finish before playing the next in the healthcare voice workflow
 
-#### Conversation Flow
-- After playback completes, system returns to listening mode
-- restartListening() resets the UI to accept new input
-- Conversation history is maintained for context in future exchanges
+#### Healthcare Voice Agent Conversation Flow
+- After playback completes, system returns to listening mode for continued medical assistance
+- restartListening() resets the UI to accept new input for the healthcare voice agent
+- Conversation history is maintained for context in future healthcare exchanges with the OpenAI agent
 
+##### Healthcare Voice Agent Workflow Diagram
 [User] → Microphone → [Browser] → WebSocket → [Server]
                                               ↓
                                           Audio Buffer
@@ -100,10 +102,10 @@ The following explains how the voice agent system processes speech-to-text (STT)
                           ┌─────────────LLM Processing──────────────┐
                           │                                         │
                           ↓                                         ↓
-                    Main Agent─────────────┬───────────Specialized Agents
+                    Main Agent─────────────┬───────────Specialized Medical Agents
                                            │                 │
                                            ↓                 ↓
-                                      Function Tools     Function Tools
+                                      Function Tools     Healthcare Tools
                           │                                         │
                           └─────────────────────────────────────────┘
                                               ↓

@@ -1,4 +1,4 @@
-# Healthcare Voice Assistant
+# Voice Assistant
 
 The system processes spoken questions about health topics and provides relevant information through both text and synthesized speech responses.
 

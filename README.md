@@ -14,8 +14,8 @@ The system processes spoken questions about health topics and provides relevant 
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/Mercurial-Ai/openai-agent.git
-   cd openai-agent/openai-voice-agents
+   git clone https://github.com/AkshayG999/voice-agents-workflow.git
+   cd voice-agents-workflow
    ```
 
 2. Install the required dependencies:

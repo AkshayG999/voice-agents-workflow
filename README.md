@@ -1,5 +1,7 @@
 # Healthcare Voice Assistant
 
+[![Healthcare Voice Assistant Demo](https://raw.githubusercontent.com/AkshayG999/voice-agents-workflow/main/demo-screenshot.png)](https://github.com/AkshayG999/voice-agents-workflow)
+
 The system processes spoken questions about health topics and provides relevant information through both text and synthesized speech responses.
 
 ## Features
@@ -7,6 +9,11 @@ The system processes spoken questions about health topics and provides relevant 
 - Real-time voice input processing
 - Automatic routing to specialized healthcare agents (cardiology, neurology, nutrition, etc.)
 - Text and voice responses
+
+## Screenshots
+
+![Screenshot 1](https://raw.githubusercontent.com/AkshayG999/voice-agents-workflow/main/screenshot1.png)
+![Screenshot 2](https://raw.githubusercontent.com/AkshayG999/voice-agents-workflow/main/screenshot2.png)
 
 ## Setup
 

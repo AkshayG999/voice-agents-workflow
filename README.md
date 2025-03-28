@@ -116,3 +116,104 @@ The following explains how our advanced healthcare voice agent system processes 
                                         Audio Chunks
                                               ↓
 [User] ← Speaker ← [Browser] ← WebSocket ← [Server]
+
+
+### 1️⃣ General Cancer Information
+What is cancer, and how does it develop?
+
+What are the most common types of cancer?
+
+What are the early signs and symptoms of cancer?
+
+How is cancer diagnosed?
+
+What are the common causes and risk factors for cancer?
+
+Is cancer hereditary?
+
+### 2️⃣ Diagnosis & Testing
+What tests are used to diagnose cancer?
+
+How accurate are cancer screenings?
+
+What is a biopsy, and how does it work?
+
+What are tumor markers, and how are they used?
+
+What do my test results mean?
+
+How do doctors determine the cancer stage?
+
+### 3️⃣ Cancer Treatment Options
+What are the main treatments for cancer?
+
+What is chemotherapy, and how does it work?
+
+What is radiation therapy, and when is it used?
+
+What are targeted therapies, and how do they work?
+
+How does immunotherapy help fight cancer?
+
+What are the benefits and risks of surgery for cancer?
+
+How is palliative care used in cancer treatment?
+
+### 4️⃣ Side Effects & Management
+What are the common side effects of chemotherapy?
+
+How can I manage nausea and vomiting during treatment?
+
+What should I eat to maintain strength during treatment?
+
+How can I deal with cancer-related fatigue?
+
+What are the long-term effects of cancer treatment?
+
+How can I cope with hair loss due to chemotherapy?
+
+### 5️⃣ Cancer & Lifestyle
+What foods help fight cancer?
+
+Is exercise safe for cancer patients?
+
+How does stress affect cancer?
+
+Can alternative therapies like yoga or acupuncture help cancer patients?
+
+How does sleep impact cancer recovery?
+
+### 6️⃣ Support & Mental Health
+How can I manage anxiety and depression after a cancer diagnosis?
+
+Where can I find support groups for cancer patients?
+
+How can I talk to my family about my cancer diagnosis?
+
+What are some coping strategies for dealing with cancer?
+
+### 7️⃣ Post-Treatment & Survivorship
+How do I know if my cancer is in remission?
+
+What follow-up tests do I need after cancer treatment?
+
+What are the chances of cancer recurrence?
+
+How can I regain strength after treatment?
+
+### 8️⃣ Cancer Prevention & Screening
+What lifestyle changes can help prevent cancer?
+
+How often should I get screened for cancer?
+
+Are there vaccines that help prevent cancer? (e.g., HPV, Hepatitis B)
+
+### 9️⃣ Personalized Care & AI Support
+How can AI help in cancer diagnosis and treatment?
+
+Can an AI assistant help me track my symptoms?
+
+How can AI improve my healthcare experience?
+
+Can AI suggest clinical trials for my condition?
+

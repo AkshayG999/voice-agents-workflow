@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voice Agent</title>
+    <title>Healthcare Voice Assistant</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #1a1b26;
             color: white;
             margin: 0;
@@ -20,7 +20,7 @@
         .container {
             width: 100%;
             max-width: 800px;
-            border: 3px double rgb(91, 164, 91);
+            border: 3px double #4caf50;
             border-radius: 10px;
             padding: 20px;
             box-sizing: border-box;
@@ -31,27 +31,154 @@
             margin-bottom: 20px;
         }
 
+        .header h1 {
+            margin-bottom: 5px;
+            color: #4caf50;
+        }
+
         .status-indicator {
             background-color: #2a2b36;
-            border: 1px solid rgb(91, 164, 91);
+            border: 1px solid #4caf50;
             border-radius: 5px;
             padding: 10px;
             text-align: center;
             margin-bottom: 20px;
+            transition: background-color 0.3s;
         }
 
-        .log-container {
+        .status-indicator.recording {
+            background-color: rgba(255, 80, 80, 0.2);
+            border-color: #ff5050;
+        }
+
+        .status-indicator.processing {
+            background-color: rgba(255, 180, 0, 0.2);
+            border-color: #ffb400;
+        }
+
+        /* Chat UI for conversation */
+        .conversation-container {
             height: 400px;
-            border: 2px solid rgb(205, 133, 63);
             border-radius: 10px;
-            padding: 15px;
+            padding: 0;
             overflow-y: auto;
             background-color: #2a2b36;
+            display: flex;
+            flex-direction: column;
+            scrollbar-width: thin;
+            scrollbar-color: #4b4d63 #2a2b36;
+        }
+
+        .conversation-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .conversation-container::-webkit-scrollbar-track {
+            background: #2a2b36;
+        }
+
+        .conversation-container::-webkit-scrollbar-thumb {
+            background-color: #4b4d63;
+            border-radius: 4px;
+        }
+
+        .message {
+            padding: 10px 15px;
+            margin: 5px 10px;
+            border-radius: 8px;
+            max-width: 80%;
+            word-wrap: break-word;
+            position: relative;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-user {
+            align-self: flex-end;
+            background-color: #2c5073;
+            color: white;
+            border-bottom-right-radius: 0;
+        }
+
+        .message-agent {
+            align-self: flex-start;
+            background-color: #3e5f40;
+            color: white;
+            border-bottom-left-radius: 0;
             white-space: pre-wrap;
         }
 
+        .message-system {
+            align-self: center;
+            background-color: rgba(80, 80, 80, 0.4);
+            color: #bbb;
+            font-size: 0.85em;
+            max-width: 90%;
+            display: none;
+        }
+
+        .message-time {
+            position: absolute;
+            font-size: 0.7em;
+            color: rgba(255, 255, 255, 0.5);
+            bottom: 0px;
+            right: 8px;
+        }
+
+        .thinking-indicator {
+            align-self: flex-start;
+            margin: 10px 15px;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            display: none;
+        }
+
+        .thinking-dots span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #aaa;
+            margin-right: 5px;
+            animation: pulse 1.5s infinite;
+        }
+
+        .thinking-dots span:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .thinking-dots span:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 0.5;
+                transform: scale(0.8);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
         button {
-            background-color: rgb(91, 164, 91);
+            background-color: #4caf50;
             color: white;
             border: none;
             padding: 10px 20px;
@@ -59,15 +186,28 @@
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
+            transition: background-color 0.2s;
         }
 
         button:hover {
-            background-color: rgb(71, 134, 71);
+            background-color: #3e8e41;
         }
 
         button:disabled {
             background-color: #555;
             cursor: not-allowed;
+        }
+
+        button.secondary {
+            background-color: transparent;
+            border: 1px solid #4caf50;
+            color: #4caf50;
+            font-size: 0.85em;
+            padding: 5px 12px;
+        }
+
+        button.secondary:hover {
+            background-color: rgba(76, 175, 80, 0.1);
         }
 
         .error-banner {
@@ -85,18 +225,114 @@
             border-radius: 5px;
             margin: 10px 0;
             overflow: hidden;
+            position: relative;
         }
 
         .volume-level {
             height: 100%;
             width: 0%;
-            background-color: rgb(91, 164, 91);
+            background-color: #4caf50;
             transition: width 0.1s;
+        }
+
+        .volume-threshold {
+            position: absolute;
+            height: 100%;
+            width: 1px;
+            background-color: rgba(255, 255, 255, 0.5);
+            left: 10%;
+            top: 0;
+        }
+
+        .audio-feedback {
+            font-size: 0.9em;
+            color: #aaa;
+            text-align: center;
+            margin: 5px 0;
+            height: 20px;
+        }
+
+        .settings-panel {
+            background-color: #2a2b36;
+            border: 1px solid #4caf50;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            width: 100%;
+            box-sizing: border-box;
+            display: none;
+        }
+
+        .settings-toggle {
+            background-color: transparent;
+            border: 1px solid #4caf50;
+            color: white;
+            font-size: 0.8em;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .settings-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .settings-row label {
+            flex: 1;
+        }
+
+        .settings-row input {
+            width: 150px;
+        }
+
+        .slider-value {
+            width: 40px;
+            text-align: right;
+            font-size: 0.9em;
         }
 
         .status-text {
             font-size: 0.9em;
             margin-top: 5px;
+            color: #aaa;
+        }
+
+        .controls-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+        }
+
+        .debug-toggle {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            font-size: 0.85em;
+            color: #aaa;
+        }
+
+        .debug-toggle input {
+            margin-right: 5px;
+        }
+
+        .clear-button {
+            background-color: transparent;
+            border: 1px solid #888;
+            color: #888;
+            font-size: 0.8em;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .clear-button:hover {
+            border-color: #aaa;
             color: #aaa;
         }
     </style>
@@ -106,8 +342,32 @@
     <div class="container">
         <div id="errorBanner" class="error-banner" style="display: none;"></div>
         <div class="header">
-            <h1>Voice Agent</h1>
+            <h1>Healthcare Voice Assistant</h1>
             <p>Speak to the agent. When you stop speaking, it will respond.</p>
+        </div>
+
+        <button class="settings-toggle" id="settingsToggle">Show Advanced Settings</button>
+
+        <div class="settings-panel" id="settingsPanel">
+            <div class="settings-row">
+                <label for="silenceThreshold">Silence Threshold:</label>
+                <input type="range" id="silenceThreshold" min="0.005" max="0.05" step="0.001" value="0.01">
+                <span class="slider-value" id="silenceThresholdValue">0.05</span>
+            </div>
+            <div class="settings-row">
+                <label for="silenceDuration">Silence Duration (ms):</label>
+                <input type="range" id="silenceDuration" min="500" max="3000" step="100" value="1500">
+                <span class="slider-value" id="silenceDurationValue">1500</span>
+            </div>
+            <div class="settings-row">
+                <label for="noiseReduction">Background Noise Reduction:</label>
+                <select id="noiseReduction">
+                    <option value="none">None</option>
+                    <option value="light">Light</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="heavy">Heavy</option>
+                </select>
+            </div>
         </div>
 
         <div class="status-indicator" id="statusIndicator">
@@ -116,14 +376,31 @@
 
         <div class="volume-meter">
             <div class="volume-level" id="volumeLevel"></div>
+            <div class="volume-threshold" id="volumeThreshold"></div>
         </div>
         <div class="status-text" id="statusText">Silence detection ready</div>
+        <div class="audio-feedback" id="audioFeedback"></div>
 
-        <div class="controls">
+        <div class="controls-container">
             <button id="recordButton">Start Recording</button>
+            <div class="debug-toggle">
+                <input type="checkbox" id="showDebugToggle">
+                <label for="showDebugToggle">Show technical messages</label>
+            </div>
+            <button class="clear-button" id="clearButton">Clear Chat</button>
         </div>
 
-        <div class="log-container" id="logContainer"></div>
+        <div class="conversation-container" id="conversationContainer">
+            <!-- Messages will be added here dynamically -->
+            <div class="thinking-indicator" id="thinkingIndicator">
+                <div class="thinking-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <span>Thinking...</span>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -134,23 +411,43 @@
         let audioQueue = [];
         let audioPlayer = new Audio();
         let isPlayingAudio = false;
+        let showDebugMessages = false;
 
         const recordButton = document.getElementById('recordButton');
         const statusIndicator = document.getElementById('statusIndicator');
-        const logContainer = document.getElementById('logContainer');
+        const conversationContainer = document.getElementById('conversationContainer');
         const errorBanner = document.getElementById('errorBanner');
         const volumeLevel = document.getElementById('volumeLevel');
+        const volumeThreshold = document.getElementById('volumeThreshold');
         const statusText = document.getElementById('statusText');
+        const audioFeedback = document.getElementById('audioFeedback');
+        const settingsToggle = document.getElementById('settingsToggle');
+        const settingsPanel = document.getElementById('settingsPanel');
+        const silenceThresholdSlider = document.getElementById('silenceThreshold');
+        const silenceThresholdValue = document.getElementById('silenceThresholdValue');
+        const silenceDurationSlider = document.getElementById('silenceDuration');
+        const silenceDurationValue = document.getElementById('silenceDurationValue');
+        const noiseReductionSelect = document.getElementById('noiseReduction');
+        const showDebugToggle = document.getElementById('showDebugToggle');
+        const clearButton = document.getElementById('clearButton');
+        const thinkingIndicator = document.getElementById('thinkingIndicator');
 
         // Silence detection settings
-        const SILENCE_THRESHOLD = 0.01; // Adjust based on testing (0-1)
-        const SILENCE_DURATION = 1500; // milliseconds of silence to trigger processing
+        let SILENCE_THRESHOLD = 0.01; // Adjust based on testing (0-1)
+        let SILENCE_DURATION = 1500; // milliseconds of silence to trigger processing
         let isSilent = false;
         let silenceStart = 0;
         let volumeAverage = 0;
         let silenceDetectionActive = false;
         let isProcessing = false;
         let processingTimeout = null;
+        let consecutiveLowVolume = 0;
+        let isLowVolume = false;
+        let volumeHistory = Array(10).fill(0);
+        let volumeHistoryIndex = 0;
+
+        // Update the volume threshold line to match the silence threshold
+        volumeThreshold.style.left = (SILENCE_THRESHOLD * 100 * 10) + '%';
 
         // Check if the browser supports required APIs
         function checkBrowserSupport() {
@@ -190,6 +487,54 @@
             errorBanner.style.display = 'block';
         }
 
+        // Format time for message timestamps
+        function formatTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
+
+        // Add message to conversation
+        function addMessage(text, type, showTimestamp = true) {
+            const msgElement = document.createElement('div');
+            msgElement.className = `message message-${type}`;
+            msgElement.textContent = text;
+
+            // Add timestamp if needed
+            if (showTimestamp) {
+                const timestamp = document.createElement('span');
+                timestamp.className = 'message-time';
+                timestamp.textContent = formatTime();
+                msgElement.appendChild(timestamp);
+            }
+
+            // For system messages, check if debug is enabled
+            if (type === 'system' && !showDebugMessages) {
+                msgElement.style.display = 'none';
+            }
+
+            // Insert before the thinking indicator
+            conversationContainer.insertBefore(msgElement, thinkingIndicator);
+            conversationContainer.scrollTop = conversationContainer.scrollHeight;
+
+            return msgElement;
+        }
+
+        // Show thinking indicator
+        function showThinking(show = true) {
+            thinkingIndicator.style.display = show ? 'flex' : 'none';
+            if (show) {
+                conversationContainer.scrollTop = conversationContainer.scrollHeight;
+            }
+        }
+
+        // Log messages (for backwards compatibility and system messages)
+        function log(message) {
+            console.log(message); // Always log to console
+            addMessage(message, 'system');
+        }
+
         // Initialize WebSocket connection
         function connectWebSocket() {
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -213,26 +558,54 @@
                     // Handle text messages
                     try {
                         const data = JSON.parse(event.data);
+
                         if (data.type === 'transcription') {
-                            log(`User: ${data.text}\n\n`);
+                            addMessage(data.text, 'user');
+                            showThinking(true);
                         }
                         else if (data.type === 'agent_response') {
-                            log(`Agent: ${data.text}\n\n`);
-                        } else if (data.type === 'lifecycle') {
+                            showThinking(false);
+                            addMessage(data.text, 'agent');
+                        }
+                        else if (data.type === 'lifecycle') {
                             log(`Lifecycle event: ${data.event}`);
 
-                            // Restart listening when done processing
-                            if (data.event === 'completed' && isProcessing) {
+                            // Update UI based on lifecycle events
+                            if (data.event === 'turn_started') {
+                                showThinking(true);
+                            }
+                            else if (data.event === 'turn_ended') {
+                                showThinking(false);
+                            }
+                            else if (data.event === 'completed' && isProcessing) {
                                 restartListening();
                             }
-                        } else if (data.type === 'error') {
+                            else if (data.event === 'processing_speech') {
+                                statusIndicator.className = 'status-indicator processing';
+                                statusIndicator.textContent = '⏳ Processing your speech...';
+                            }
+                        }
+                        else if (data.type === 'error') {
+                            showThinking(false);
                             log(`Error: ${data.message}`);
+                            addMessage(`Error: ${data.message}`, 'system', true);
                             restartListening();
-                        } else if (data.type === 'processing_complete') {
+                        }
+                        else if (data.type === 'processing_complete') {
+                            showThinking(false);
+                            statusIndicator.className = 'status-indicator';
+                            statusIndicator.textContent = '🔴 Recording... (Will auto-process on silence)';
                             restartListening();
                         }
                     } catch (e) {
-                        log(`Received message: ${event.data}\n\n`);
+                        log(`Error parsing server message: ${e}`);
+                        log(`Received message: ${event.data}`);
+                        const correctedMessage = event.data.replace(/"([^"]*?)"([^"]*?)"/g, '\\"$1\\"$2');
+                        const messageData = JSON.parse(correctedMessage);
+
+                        if (messageData.type === "agent_response" && messageData.text) {
+                            addMessage(messageData.text, agent);
+                        }
                     }
                 }
             };
@@ -242,6 +615,7 @@
                     log(`Connection closed cleanly, code=${event.code} reason=${event.reason}`);
                 } else {
                     log('Connection died');
+                    addMessage("Connection to server lost. Trying to reconnect...", 'system', true);
                 }
 
                 // Try to reconnect after 3 seconds
@@ -253,14 +627,6 @@
             };
         }
 
-        // Log messages to UI
-        function log(message) {
-            const entry = document.createElement('div');
-            entry.textContent = message;
-            logContainer.appendChild(entry);
-            logContainer.scrollTop = logContainer.scrollHeight;
-        }
-
         // Handle recording button click
         recordButton.addEventListener('click', function () {
             if (!isRecording) {
@@ -270,7 +636,55 @@
             }
         });
 
-        // Start recording microphone audio
+        // Process audio when silence is detected
+        function processAudio() {
+            if (isProcessing) return;
+
+            isProcessing = true;
+            statusText.textContent = "Processing audio...";
+            log("Silence detected - processing audio");
+            statusIndicator.className = 'status-indicator processing';
+            statusIndicator.textContent = '⏳ Processing your speech...';
+
+            // Send a special message to indicate end of speech
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify({
+                    type: "end_of_speech"
+                }));
+            }
+
+            // Keep recording but stop sending audio while processing
+            silenceDetectionActive = false;
+
+            // Reset after a response or timeout
+            processingTimeout = setTimeout(() => {
+                isProcessing = false;
+                silenceDetectionActive = true;
+                statusText.textContent = "Speak now...";
+                statusIndicator.className = 'status-indicator recording';
+                statusIndicator.textContent = '🔴 Recording... (Will auto-process on silence)';
+                showThinking(false);
+            }, 15000); // 15 second timeout in case no response
+        }
+
+        // Restart recording after processing
+        function restartListening() {
+            if (processingTimeout) {
+                clearTimeout(processingTimeout);
+                processingTimeout = null;
+            }
+
+            isProcessing = false;
+            silenceDetectionActive = true;
+            statusText.textContent = "Speak now...";
+            if (isRecording) {
+                statusIndicator.className = 'status-indicator recording';
+                statusIndicator.textContent = '🔴 Recording... (Will auto-process on silence)';
+            }
+            showThinking(false);
+        }
+
+        // Start recording
         async function startRecording() {
             try {
                 // If we're not in a secure context, show a helpful message
@@ -308,17 +722,84 @@
 
                 // Create analyzer for volume detection
                 const analyser = audioContext.createAnalyser();
-                analyser.fftSize = 256;
+                analyser.fftSize = 1024; // Increased for better frequency resolution
                 analyser.smoothingTimeConstant = 0.3;
                 source.connect(analyser);
 
-                // Setup processing
-                const processor = audioContext.createScriptProcessor(2048, 1, 1);
-                source.connect(processor);
-                processor.connect(audioContext.destination);
+                // Add background noise reduction if selected
+                let currentNode = source;
+                if (noiseReductionSelect.value !== 'none') {
+                    try {
+                        // Check if browser supports required audio nodes
+                        const hasCompressor = typeof audioContext.createDynamicCompressor === 'function';
+                        const hasGain = typeof audioContext.createGain === 'function';
 
-                // Setup silence detection with analyzer
-                const dataArray = new Uint8Array(analyser.frequencyBinCount);
+                        if (hasGain) {
+                            // Create a gain node to potentially boost low volume
+                            // This is widely supported
+                            const gainNode = audioContext.createGain();
+                            gainNode.gain.value = 1.0; // Start with normal gain
+                            currentNode.connect(gainNode);
+                            currentNode = gainNode;
+
+                            // Apply noise reduction settings
+                            const noiseReductionLevel = {
+                                'light': 0.05,
+                                'medium': 0.1,
+                                'heavy': 0.2
+                            }[noiseReductionSelect.value] || 0.05;
+
+                            // If compressor is available, use it
+                            if (hasCompressor) {
+                                const compressor = audioContext.createDynamicCompressor();
+                                compressor.threshold.value = -50;
+                                compressor.knee.value = 40;
+                                compressor.ratio.value = 12;
+                                compressor.attack.value = 0;
+                                compressor.release.value = 0.25;
+                                currentNode.connect(compressor);
+                                currentNode = compressor;
+                                log(`Applied ${noiseReductionSelect.value} noise reduction with compressor`);
+                            } else {
+                                // Simple noise gate using gain - adjust gain based on volume
+                                log(`Applied ${noiseReductionSelect.value} noise reduction with simple gain control`);
+                            }
+
+                            currentNode.connect(analyser);
+                        } else {
+                            // If even basic gain isn't supported, just connect directly
+                            source.connect(analyser);
+                            log(`Browser doesn't support audio processing nodes. Using basic audio.`);
+                        }
+                    } catch (err) {
+                        // If there's any error, fall back to basic audio
+                        source.connect(analyser);
+                        log(`Could not apply noise reduction: ${err.message}`);
+                        console.error("Noise reduction error:", err);
+                    }
+                } else {
+                    // No noise reduction selected, connect directly
+                    source.connect(analyser);
+                }
+
+                // Setup processing with compatibility check
+                let processor;
+                try {
+                    // Try to create the script processor
+                    processor = audioContext.createScriptProcessor(4096, 1, 1);
+                    source.connect(processor);
+                    processor.connect(audioContext.destination);
+                } catch (err) {
+                    showError(`Your browser doesn't fully support audio processing: ${err.message}`);
+                    if (mediaRecorder && mediaRecorder.stream) {
+                        mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                    }
+                    return;
+                }
+
+                // For frequency analysis
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
 
                 // Process audio data and detect silence
                 processor.onaudioprocess = function (e) {
@@ -328,43 +809,97 @@
                     const inputData = e.inputBuffer.getChannelData(0);
                     const audioData = convertFloat32ToInt16(inputData);
 
-                    // Send audio to server
-                    if (socket && socket.readyState === WebSocket.OPEN && !isProcessing) {
-                        socket.send(audioData);
-                    }
+                    // Get volume data for analysis
+                    try {
+                        analyser.getByteFrequencyData(dataArray);
 
-                    // Volume analysis for silence detection
-                    analyser.getByteFrequencyData(dataArray);
+                        // Calculate volume level (0-1)
+                        let sum = 0;
+                        for (let i = 0; i < dataArray.length; i++) {
+                            sum += dataArray[i];
+                        }
 
-                    // Calculate volume level (0-1)
-                    let sum = 0;
-                    for (let i = 0; i < dataArray.length; i++) {
-                        sum += dataArray[i];
-                    }
+                        const instantAverage = sum / dataArray.length / 255;
 
-                    const average = sum / dataArray.length / 255;
-                    volumeAverage = average * 0.3 + volumeAverage * 0.7; // Smooth the value
+                        // Store in history for analysis
+                        volumeHistory[volumeHistoryIndex] = instantAverage;
+                        volumeHistoryIndex = (volumeHistoryIndex + 1) % volumeHistory.length;
 
-                    // Update volume meter visualization
-                    volumeLevel.style.width = (volumeAverage * 100) + '%';
+                        // Calculate rolling average
+                        const historySum = volumeHistory.reduce((a, b) => a + b, 0);
+                        const historyAvg = historySum / volumeHistory.length;
 
-                    // Silence detection
-                    if (silenceDetectionActive && !isProcessing) {
-                        if (volumeAverage < SILENCE_THRESHOLD) {
-                            if (!isSilent) {
-                                isSilent = true;
-                                silenceStart = Date.now();
-                                statusText.textContent = "Silence detected...";
-                            } else if (Date.now() - silenceStart > SILENCE_DURATION) {
-                                // Silence duration exceeded threshold - process the audio
-                                processAudio();
+                        // Smoothed volume for display and silence detection
+                        volumeAverage = instantAverage * 0.3 + volumeAverage * 0.7;
+
+                        // Update volume meter visualization
+                        volumeLevel.style.width = (volumeAverage * 100) + '%';
+
+                        // Check for consistently low volume
+                        if (historyAvg < SILENCE_THRESHOLD * 0.5) {
+                            consecutiveLowVolume++;
+                            if (consecutiveLowVolume > 20 && !isLowVolume) { // About 2 seconds of low volume
+                                isLowVolume = true;
+                                audioFeedback.textContent = "Your microphone volume seems low. Please speak louder.";
+                                audioFeedback.style.color = "#ffaa00";
                             }
                         } else {
-                            if (isSilent) {
-                                isSilent = false;
-                                statusText.textContent = "Speaking...";
+                            consecutiveLowVolume = 0;
+                            if (isLowVolume) {
+                                isLowVolume = false;
+                                audioFeedback.textContent = "";
+                                audioFeedback.style.color = "#aaa";
                             }
                         }
+
+                        // Simplified speech pattern detection that works with limited audio processing
+                        // Instead of frequency analysis, use volume variance over time
+                        // Calculate variance in recent volume history
+                        let varianceSum = 0;
+                        const mean = historyAvg;
+
+                        for (let i = 0; i < volumeHistory.length; i++) {
+                            const diff = volumeHistory[i] - mean;
+                            varianceSum += diff * diff;
+                        }
+
+                        const volumeVariance = varianceSum / volumeHistory.length;
+                        const isSpeechPattern = volumeVariance > 0.00005; // Variance threshold for speech vs background noise
+
+                        // Send audio to server if not processing and above noise floor
+                        if (socket && socket.readyState === WebSocket.OPEN && !isProcessing) {
+                            // Only send audio that's likely to be speech (above threshold or shows speech patterns)
+                            if (volumeAverage > SILENCE_THRESHOLD ||
+                                (volumeAverage > SILENCE_THRESHOLD * 0.7 && isSpeechPattern)) {
+                                socket.send(audioData);
+                            }
+                        }
+
+                        // Silence detection
+                        if (silenceDetectionActive && !isProcessing) {
+                            if (volumeAverage < SILENCE_THRESHOLD && !isSpeechPattern) {
+                                if (!isSilent) {
+                                    isSilent = true;
+                                    silenceStart = Date.now();
+                                    statusText.textContent = "Silence detected...";
+                                } else if (Date.now() - silenceStart > SILENCE_DURATION) {
+                                    // Silence duration exceeded threshold - process the audio
+                                    processAudio();
+                                }
+                            } else {
+                                if (isSilent) {
+                                    isSilent = false;
+                                    statusText.textContent = "Speaking...";
+                                }
+                            }
+                        }
+                    } catch (err) {
+                        // If there's an error with the analyzer, still send audio data
+                        // but don't perform sophisticated detection
+                        if (socket && socket.readyState === WebSocket.OPEN && !isProcessing) {
+                            socket.send(audioData);
+                        }
+                        console.error("Audio analysis error:", err);
                     }
                 };
 
@@ -385,9 +920,15 @@
                 silenceDetectionActive = true;
                 isSilent = false;
                 isProcessing = false;
+                isLowVolume = false;
+                consecutiveLowVolume = 0;
+                volumeHistory = Array(10).fill(0);
+                volumeHistoryIndex = 0;
                 recordButton.textContent = 'Stop Recording';
+                statusIndicator.className = 'status-indicator recording';
                 statusIndicator.textContent = '🔴 Recording... (Will auto-process on silence)';
                 statusText.textContent = "Speak now...";
+                audioFeedback.textContent = "";
                 log('Recording started with silence detection');
 
                 // Clear any pending audio when starting a new recording
@@ -408,44 +949,6 @@
             }
         }
 
-        // Process audio when silence is detected
-        function processAudio() {
-            if (isProcessing) return;
-
-            isProcessing = true;
-            statusText.textContent = "Processing audio...";
-            log("Silence detected - processing audio");
-
-            // Send a special message to indicate end of speech
-            if (socket && socket.readyState === WebSocket.OPEN) {
-                socket.send(JSON.stringify({
-                    type: "end_of_speech"
-                }));
-            }
-
-            // Keep recording but stop sending audio while processing
-            silenceDetectionActive = false;
-
-            // Reset after a response or timeout
-            processingTimeout = setTimeout(() => {
-                isProcessing = false;
-                silenceDetectionActive = true;
-                statusText.textContent = "Speak now...";
-            }, 10000); // 10 second timeout in case no response
-        }
-
-        // Restart recording after processing
-        function restartListening() {
-            if (processingTimeout) {
-                clearTimeout(processingTimeout);
-                processingTimeout = null;
-            }
-
-            isProcessing = false;
-            silenceDetectionActive = true;
-            statusText.textContent = "Speak now...";
-        }
-
         // Stop recording
         function stopRecording() {
             if (mediaRecorder) {
@@ -455,6 +958,7 @@
 
             isRecording = false;
             silenceDetectionActive = false;
+            showThinking(false);
 
             if (processingTimeout) {
                 clearTimeout(processingTimeout);
@@ -462,6 +966,7 @@
             }
 
             recordButton.textContent = 'Start Recording';
+            statusIndicator.className = 'status-indicator';
             statusIndicator.textContent = '⚪ Press Start Recording to begin';
             statusText.textContent = "Silence detection ready";
             volumeLevel.style.width = '0%';
@@ -575,6 +1080,35 @@
                     recordButton.click();
                 }
             });
+
+            // Add event listeners for debug toggle and clear button
+            showDebugToggle.addEventListener('change', toggleDebugMessages);
+            clearButton.addEventListener('click', clearConversation);
+
+            // Settings toggle
+            settingsToggle.addEventListener('click', function () {
+                if (settingsPanel.style.display === 'none' || settingsPanel.style.display === '') {
+                    settingsPanel.style.display = 'block';
+                    settingsToggle.textContent = 'Hide Advanced Settings';
+                } else {
+                    settingsPanel.style.display = 'none';
+                    settingsToggle.textContent = 'Show Advanced Settings';
+                }
+            });
+
+            // Update settings values
+            silenceThresholdSlider.addEventListener('input', function () {
+                const value = parseFloat(this.value);
+                silenceThresholdValue.textContent = value.toFixed(3);
+                SILENCE_THRESHOLD = value;
+                volumeThreshold.style.left = (value * 100 * 10) + '%'; // Multiplied by 10 to make the marker more visible
+            });
+
+            silenceDurationSlider.addEventListener('input', function () {
+                const value = parseInt(this.value);
+                silenceDurationValue.textContent = value;
+                SILENCE_DURATION = value;
+            });
         });
 
         // Handle page unload
@@ -586,6 +1120,30 @@
                 socket.close();
             }
         });
+
+        // Toggle debug messages
+        function toggleDebugMessages() {
+            showDebugMessages = showDebugToggle.checked;
+            const systemMessages = document.querySelectorAll('.message-system');
+
+            systemMessages.forEach(msg => {
+                msg.style.display = showDebugMessages ? 'block' : 'none';
+            });
+
+            if (showDebugToggle.checked) {
+                log('Debug mode enabled. Technical messages will be shown.');
+            } else {
+                log('Debug mode disabled. Technical messages will be hidden.');
+            }
+        }
+
+        // Clear conversation
+        function clearConversation() {
+            // Keep the thinking indicator but remove all other messages
+            const messages = document.querySelectorAll('.message');
+            messages.forEach(msg => msg.remove());
+            log('Conversation cleared.');
+        }
     </script>
 </body>
 

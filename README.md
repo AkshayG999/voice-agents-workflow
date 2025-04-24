@@ -11,8 +11,8 @@ The system processes spoken questions about health topics and provides relevant 
 
 ## Screenshots
 
-![Screenshot 1](https://github.com/Mercurial-Ai/openai-agent.git/blob/main/public/image-1.png)
-![Screenshot 2](https://github.com/Mercurial-Ai/openai-agent.git/blob/main/public/image-2.png)
+<img src="./public/image-1.png" alt="Demo PNG">
+<img src="./public/image-2.png" alt="Demo GIF" style="width: 100%; max-width: 400px; height: auto;">
 
 ## Setup
 
